@@ -1,10 +1,10 @@
 package com.cako.project.column.tree;
 
-import com.cako.basic.version.entity.Version;
+import java.util.List;
+
+import com.cako.basic.platform.attachment.entity.Attachment;
 import com.cako.project.column.entity.Column;
 import com.cako.project.column.entity.News;
-
-import java.util.List;
 
 public class NewsClass {
 
@@ -14,9 +14,9 @@ public class NewsClass {
 	private String columnId;
 	private String content;
 	private String deployStatus;
-	private List<Version> versions;
+	private List<Attachment> versions;
 	
-	public NewsClass(News news,Column column,List<Version> versions) {
+	public NewsClass(News news,Column column,List<Attachment> versions) {
 		this.id = news.getId();
 		this.title = news.getTitle();
 		this.content = news.getContent();
@@ -68,11 +68,11 @@ public class NewsClass {
 		this.content = content;
 	}
 
-	public List<Version> getVersions() {
+	public List<Attachment> getVersions() {
 		return versions;
 	}
 
-	public void setVersions(List<Version> versions) {
+	public void setVersions(List<Attachment> versions) {
 		this.versions = versions;
 	}
 	

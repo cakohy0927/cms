@@ -88,7 +88,7 @@ public class LuceneTest {
 	public static void main(String[] args) {
 		searcher();
 //		index();
-		String str = "Home page of The Apache Software Foundation... http://apache.dataguru.cn/lucene/java/ Backup SitesPlease use the backup mirrors only to download PGP and";
+		//String str = "Home page of The Apache Software Foundation... http://apache.dataguru.cn/lucene/java/ Backup SitesPlease use the backup mirrors only to download PGP and";
 
 	}
 }

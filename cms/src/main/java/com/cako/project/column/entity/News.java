@@ -10,9 +10,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.cako.basic.platform.attachment.entity.Attachment;
 import com.cako.basic.platform.user.entity.User;
 import com.cako.basic.util.SysContent;
-import com.cako.basic.version.entity.Version;
 import com.orm.commons.utils.IdEntity;
 
 /**
@@ -47,7 +47,7 @@ public class News extends IdEntity{
 	/**
 	 * 文件
 	 */
-	private List<Version> versions;
+	private List<Attachment> versions;
 	
 	private String isDelete = SysContent.IsDisable.NODISABLE;
 
@@ -80,11 +80,11 @@ public class News extends IdEntity{
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name="version_id")
-	public List<Version> getVersions() {
+	public List<Attachment> getVersions() {
 		return versions;
 	}
 
-	public void setVersions(List<Version> versions) {
+	public void setVersions(List<Attachment> versions) {
 		this.versions = versions;
 	}
 

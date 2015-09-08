@@ -16,9 +16,6 @@ import org.apache.lucene.store.FSDirectory;
 
 public class IndexUtils {
 
-	private String[] ids = { "1", "2", "3", "4", "5", "6" };
-	private String[] emails = {"aa@qq.com","bb@qq.com","cc@qq.com","dd@qq.com","ee@qq.com","ff@qq.com"};
-	
 	/**
 	 * @param indexPath
 	 *            索引文件存放的路径

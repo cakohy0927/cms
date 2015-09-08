@@ -18,7 +18,7 @@ public class ModuleTree {
 	
 	private String pId;
 	
-	private Boolean open = Boolean.TRUE;
+	private Boolean open = Boolean.FALSE;
 	
 	
 	/**
@@ -42,8 +42,7 @@ public class ModuleTree {
 		this.text = module.getName();
 		this.state = state;
 		this.uri = module.getPath();
-		System.err.println("ModuleTree.ModuleTree()：" + module.getIsDisplay());
-		this.isDisplay = module.getIsDisplay() == true ? 1 : 0;
+		this.isDisplay = module.getIsDisplay() != null && module.getIsDisplay() == true ? 1 : 0;
 		this.permission = module.getPermission();
 		this.isDisable = module.getIsDisable();
 	}

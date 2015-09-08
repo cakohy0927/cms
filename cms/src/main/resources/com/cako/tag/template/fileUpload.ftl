@@ -9,34 +9,38 @@
 	.container{
 		margin-top:50px;
 	}
-	.row>div{
-		margin-top:20px;
-		height:50px;
-		line-height:50px;
-	}
 	#file-table{
 		margin-top:25px;
-		margin-left:-15px;
 	}
 	#file-list>td{
 		width:6%;
 	}
 	.bar {
 	    height: 22px;
-	    margin-left: 330px;
 	    margin-top: 35px;
 	    background: green;
 	}
 	input[type="radio"], input[type="checkbox"] {
 	    margin: 10px 9px 0;
 	}
-	#progress{
-		margin-left: 80px;
-	    margin-top: -63px;
-	    width: 500px;
+	.mask {
+	    position: absolute;
+	    left: 0;
+	    top: 0;
+	    width: 100%;
+	    height: 100%;
+	    filter: alpha(opacity = 40);
+	    opacity: 0.40;
+	    font-size: 1px;
+	    text-align:center;
+	    overflow: hidden;
+	    background: #1B1818;
+	}
+	.mask-msg {
+		filter: alpha(opacity = 0);
+		opacity: 0;
 	}
 </style>
-
 <script type="text/javascript">
 	$(document).ready(function(){
 		var uploader = $("#fileupload-file");
@@ -57,11 +61,13 @@
 						+obj2[i].name+"</td><td>"+obj2[i].size+"</td><td>"+obj2[i].suffix+"</td><td><a href=\"javascript:deleteTr('"+num+"')\">删除</a></td></tr>"
 				}
 				$("#file-list").after(content);
-				$('#progress .bar').css('width','0%');
+				$('.progress').css('display','none');
+				$('.progress-bar').css('width','0%');
 			},
 			progressall : function(e, data) {//设置上传进度事件的回调函数  
-				var progress = parseInt(data.loaded / data.total *60, 20);
-				$('#progress .bar').css('width', progress + '%');
+				$('.progress').css('display','block');	
+				var progress = parseInt(data.loaded / data.total * 60, 17);
+				$('.progress-bar').css('width', progress + '%');
 			}
 		});
 	});
@@ -71,6 +77,7 @@
         $("#"+id).remove();
     }
     function fileUploadFile(){
+	    mask();
     	$.ajax({
   			type: "POST",
   			url: "${ctx}/version/fileUpload",
@@ -79,6 +86,7 @@
   			data:$("#fileupload-file").serialize(),// 你的formid
             async: false,
   			success:function(data){
+	  			hiddenMask();
   				if(data.resposeCode == 200){
   					$("#versionIds").val(data.object);
   					$.messager.alert('提示信息',data.result,'info');
@@ -90,10 +98,22 @@
 		});
     }
     
+    function mask(){
+		var mask_div = "<div class=\"mask\" id=\"mask_div\" style=\"z-index: 9006;width:"+window.outerWidth+"px;height:"+document.body.offsetHeight+"px;position: absolute;display: block;\"></div>";
+		$('.container-fluid').append(mask_div);
+		var mask_msg = "<div style=\"z-index:9008;background:#FFFFFF;position: absolute;display: block;width:auto;height:126px;top:"+(document.body.offsetHeight / 2 - 100)+"px;left:"+(document.body.offsetWidth / 2 - 200)+"px;\">"
+			+"<img src=\"${ctx}/static/project/images/5663276531418682069.jpg\">"
+		+"</div>"
+		$("#mask_div").html(mask_msg);
+	}
+	
+	function hiddenMask(){
+		$("#mask_div").remove();
+	}
 </script>
-<div class="container-fluid">
+<div class="container-fluid row">
 	<form id="fileupload-file">
-		<div class="row">
+		<div class="">
 			<span class="btn btn-success fileinput-button"> 
 				<i class="glyphicon glyphicon-plus"></i> 
 				<span>选择文件</span> 
@@ -104,11 +124,14 @@
 				<span>开始上传</span>
 			</button>
 		</div>
-		<div id="progress" >
-		    <div class="bar" style="width: 0%;"></div>
+		<div class="progress" style="margin-top:5px;display:none">
+		  	<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+		  	</div>
 		</div>
-		<table id="file-table" class="table table-striped table-bordered table-hover" style="display:none">
-			<tr id="file-list"><td>文件名</td><td>文件大小</td><td>类型</td><td>操作</td></tr>
-		</table>
+		<div>
+			<table id="file-table" class="table table-striped table-bordered table-hover" style="display:none">
+				<tr id="file-list"><td>文件名</td><td>文件大小</td><td>文件类型</td><td>操作</td></tr>
+			</table>
+		</div>
 	</form>
 </div>

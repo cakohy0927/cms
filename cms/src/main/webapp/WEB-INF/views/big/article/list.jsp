@@ -8,9 +8,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="${ctx}/static/bootstrap/css/bootstrap.css">
+<link rel="stylesheet" href="${ctx}/static/jquery/jquery.autocomplete/jquery.autocomplete.css">
+<script type="text/javascript" src="${ctx}/static/jquery-easyui/jquery.min.js"></script>
 <script type="text/javascript" src="${ctx}/static/jquery-easyui/jquery.min.js"></script>
 <script type="text/javascript" src="${ctx}/static/jquery-easyui/jquery.easyui.min.js"></script>
 <script type="text/javascript" src="${ctx}/static/bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript" src="${ctx}/static/jquery/jquery.autocomplete/jquery.autocomplete.js"></script>
 <title>全文检索</title>
 <style type="text/css">
 	table tr td {
@@ -18,41 +21,38 @@
 	}
 </style>
 <script type="text/javascript">
-	$(document).ready(function name() {
-		$("#createIndex").on('click',function(){
-			$.ajax({
-				type : 'GET',
-				dataType : 'JSON',
-				url : '${ctx}/big/createIndex',
-				success: function (data){
-					if(data.resposeCode == 200){
-						alert('索引创建成功');
-						return false;
-					}
-				}
-			});
-			
-		});
-		$("#seacher").click(function(){
-			window.location.href='${ctx}/big/list?content='+$("#keyWord").val();
-		});
+	function search() {
+		queryForm.action="${ctx}/big/list";
+		queryForm.submit();
+	}
+	$(document).ready(function(){
+		$('#keyWord').AutoComplete({
+			'data': "${ctx}/big/getKeyWord",
+	        'ajaxDataType': 'json',
+	        'onerror': function(msg){
+	        	alert(msg);
+	        },
+            'itemHeight': 20,
+            'width':document.body.offsetWidth*0.465
+        }).AutoComplete('show');
 	});
 </script>
 </head>
 <body>
-	<div class="container-fluid" style="margin-top:25px;margin-bottom:30px;">
-		<div class="form-group">
-			<label for="name" class="col-sm-2 control-label">
-			</label>
-			<div class="col-sm-6">
-				<input type="text" name="keyWord" class="form-control" id="keyWord" placeholder="请输入搜索内容">
+	<form id="queryForm" name="queryForm">
+		<div class="container-fluid" style="margin-top:25px;margin-bottom:30px;">
+			<div class="form-group">
+				<label for="name" class="col-sm-2 control-label">
+				</label>
+				<div class="col-sm-6">
+					<input type="text" name="keyWord" value="${keyWord}" class="form-control" id="keyWord" placeholder="请输入搜索内容">
+				</div>
+				<label for="name" class="col-sm-2 control-label">
+					<button class="btn btn-primary" type="button" onclick="search()" style="width:120px;">搜索</button>
+				</label>
 			</div>
-			<label for="name" class="col-sm-3 control-label">
-				<button class="btn btn-primary" type="button" id="seacher" style="width:120px;">搜索</button>
-				<button class="btn btn-default" id="createIndex" type="button" style="width:120px;">创建索引</button>
-			</label>
 		</div>
-	</div>
+	</form>
 	<div class="container-fluid">
 		<table class="table table-striped table-bordered table-hover">
 			<tr>

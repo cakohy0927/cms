@@ -3,7 +3,7 @@ package com.cako.project.big;
 import java.util.Date;
 import java.util.List;
 
-import com.cako.basic.version.entity.Version;
+import com.cako.basic.platform.attachment.entity.Attachment;
 import com.cako.project.column.entity.News;
 
 public class NewsClass {
@@ -34,7 +34,7 @@ public class NewsClass {
 	/**
 	 * 文件
 	 */
-	private List<Version> versions;
+	private List<Attachment> versions;
 
 	public Date getCreateTime() {
 		return createTime;
@@ -99,11 +99,11 @@ public class NewsClass {
 		this.columnName = columnName;
 	}
 
-	public List<Version> getVersions() {
+	public List<Attachment> getVersions() {
 		return versions;
 	}
 
-	public void setVersions(List<Version> versions) {
+	public void setVersions(List<Attachment> versions) {
 		this.versions = versions;
 	}
 	

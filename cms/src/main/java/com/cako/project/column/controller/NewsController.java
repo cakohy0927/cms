@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cako.basic.platform.attachment.entity.Attachment;
+import com.cako.basic.platform.attachment.service.AttachmentService;
 import com.cako.basic.platform.user.entity.User;
 import com.cako.basic.util.ListTools;
 import com.cako.basic.util.MessageObject;
 import com.cako.basic.util.WebUtils;
-import com.cako.basic.version.entity.Version;
-import com.cako.basic.version.service.IVersionService;
 import com.cako.project.column.entity.Column;
 import com.cako.project.column.entity.News;
 import com.cako.project.column.service.ColumnService;
@@ -47,7 +47,7 @@ public class NewsController {
 	private MessageObject message = new MessageObject();
 
 	@Autowired
-	private IVersionService versionService;
+	private AttachmentService attachmentService;
 
 	@Autowired
 	private ColumnService columnService;
@@ -61,7 +61,7 @@ public class NewsController {
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public @ResponseBody void save(HttpServletRequest request, HttpServletResponse response, News news) throws IOException {
+	public void save(HttpServletRequest request, HttpServletResponse response, News news) throws IOException {
 		try {
 			String content = request.getParameter("content");
 			String columnId = request.getParameter("columnId");
@@ -72,14 +72,14 @@ public class NewsController {
 			if (StringUtils.isEmpty(news.getId())) {
 				HttpSession session = request.getSession(true); 
 				User user = (User) session.getAttribute("user");
-				news.setUser(user);
 				news.setCreateTime(new Date());
+				news.setUser(user);
 			} else {
 				news.setUpdateTime(new Date());
 			}
 			String versionIds = request.getParameter("versionIds");
 			if (StringUtils.isNotEmpty(versionIds)) {
-				List<Version> versions = versionService.getVersions(ListTools.toArrayList(versionIds));
+				List<Attachment> versions = attachmentService.getVersions(ListTools.toArrayList(versionIds));
 				news.setVersions(versions);
 				news.setContent(content);
 			}
@@ -114,7 +114,7 @@ public class NewsController {
 			List<NewsClass> newsClasses = new ArrayList<NewsClass>();
 			for (News news : pageInfo) {
 				Column column = newsService.getColumnByNewsId(news.getId());
-				List<Version> versions = newsService.getVersionList(news.getId());
+				List<Attachment> versions = newsService.getVersionList(news.getId());
 				String content = news.getContent();
 				content = new HtmlSplit(news.getContent(), null).doStartTag();
 				news.setContent(content);

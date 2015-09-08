@@ -32,11 +32,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cako.basic.activiti.service.ActivitiService;
+import com.cako.basic.platform.attachment.entity.Attachment;
 import com.cako.basic.util.FileTools;
 import com.cako.basic.util.Graph;
 import com.cako.basic.util.MessageObject;
 import com.cako.basic.util.SystemContext;
-import com.cako.basic.version.entity.Version;
 import com.orm.commons.utils.JsonMapper;
 
 @Controller
@@ -118,7 +118,7 @@ public class ActivitiController {
 		if (!new File(realPath).exists()) {
 			new File(realPath).mkdirs();
 		}
-		List<Version> versions = new ArrayList<Version>();
+		List<Attachment> versions = new ArrayList<Attachment>();
 		String[] values = request.getParameterValues("myfiles");
 		MessageObject message = new MessageObject();
 		int flag = 0;

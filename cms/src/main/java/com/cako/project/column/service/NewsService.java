@@ -2,7 +2,7 @@ package com.cako.project.column.service;
 
 import java.util.List;
 
-import com.cako.basic.version.entity.Version;
+import com.cako.basic.platform.attachment.entity.Attachment;
 import com.cako.project.column.entity.Column;
 import com.cako.project.column.entity.News;
 import com.orm.commons.service.BaseService;
@@ -20,5 +20,5 @@ public interface NewsService extends BaseService<News, String> {
 	 * @param id
 	 * @return
 	 */
-	public List<Version> getVersionList(String id);
+	public List<Attachment> getVersionList(String id);
 }

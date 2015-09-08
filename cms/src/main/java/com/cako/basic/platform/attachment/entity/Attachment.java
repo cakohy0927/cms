@@ -1,4 +1,4 @@
-package com.cako.basic.version.entity;
+package com.cako.basic.platform.attachment.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -12,8 +12,8 @@ import com.orm.commons.utils.IdEntity;
  *
  */
 @Entity
-@Table(name = "system_version")
-public class Version extends IdEntity {
+@Table(name = "system_attachment")
+public class Attachment extends IdEntity {
 
 	/**
 	 * 附件的名称
@@ -44,11 +44,11 @@ public class Version extends IdEntity {
 	 */
 	private String suffix;
 	
-	public Version(){
+	public Attachment(){
 		
 	}
 	
-	public Version(String name, String path, String type, String size,String suffix) {
+	public Attachment(String name, String path, String type, String size,String suffix) {
 		super();
 		this.name = name;
 		this.path = path;
@@ -56,7 +56,7 @@ public class Version extends IdEntity {
 		this.size = size;
 		this.suffix = suffix;
 	}
-	public Version(String name, String path, String type, String size) {
+	public Attachment(String name, String path, String type, String size) {
 		super();
 		this.name = name;
 		this.path = path;

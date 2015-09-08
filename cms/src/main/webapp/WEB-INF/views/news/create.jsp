@@ -39,8 +39,10 @@
 		
 		var type = $("#cc").val();
 		if(type==''){
-			$.messager.alert('提示信息', '所属行业不能为空', 'warning');
-			return false;
+			if(content == ''){
+				$.messager.alert('提示信息', '所属行业不能为空', 'warning');
+				return;
+			}
 		}
 		$('#saveNews').form('submit', {
 			url : '${ctx}/news/save',
@@ -115,7 +117,7 @@
 		</div>
       	<div>
       		<label for="name">内容:</label>
-			<textarea rows="30" cols="50" id="editor01" name="editor01" placeholder="请输入内容."></textarea>
+			<textarea rows="30" cols="50" id="editor01" name="editor01" placeholder="请输入内容.">请输入.</textarea>
 			<script type="text/javascript">
 				CKEDITOR.replace('editor01');
 			</script>

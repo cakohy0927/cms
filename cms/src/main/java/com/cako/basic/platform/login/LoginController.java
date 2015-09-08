@@ -24,6 +24,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.cako.basic.platform.menu.entity.Module;
 import com.cako.basic.platform.menu.service.ModuleService;
+import com.cako.basic.platform.menu.tree.ModuleTree;
 import com.cako.basic.platform.user.entity.User;
 import com.cako.basic.platform.user.service.IUserService;
 import com.cako.basic.util.MessageObject;
@@ -49,27 +50,12 @@ public class LoginController {
 		model.addAttribute("user", user);
 		try {
 			Map<String, Object> paramMap = new HashMap<String, Object>();
-			String id = request.getParameter("id");
-			if (StringUtils.isEmpty(id)) {
-				paramMap.put("name", "目录");
-			}else {
-				paramMap.put("module.id", id);
-			}
 			List<Module> menus = menuService.queryByMap(paramMap);
-			List<Module> list = new ArrayList<Module>();
+			List<ModuleTree> list = new ArrayList<ModuleTree>();
 			for (Module menu : menus) {
-				paramMap = new HashMap<String, Object>();
-				paramMap.put("module.id", menu.getId().toString());
-				List<Module> menuList = menuService.queryByMap(paramMap);
-				for (Module menu2 : menuList) {
-					String path = menu2.getPath();
-					if (!StringUtils.equals("javascript:void(0)", path)) {
-						menu2.setPath(request.getContextPath() + path);
-					}
-					list.add(menu2);
-				}
+				list.add(new ModuleTree(menu,"closed" ));
 			}
-			model.addAttribute("list", list);
+			model.addAttribute("list", new JsonMapper().toJson(list));
 		} catch (ServiceException e) {
 			e.printStackTrace();
 		}

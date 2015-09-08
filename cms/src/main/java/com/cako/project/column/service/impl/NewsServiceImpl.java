@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cako.basic.version.entity.Version;
+import com.cako.basic.platform.attachment.entity.Attachment;
 import com.cako.project.column.dao.NewsDao;
 import com.cako.project.column.entity.Column;
 import com.cako.project.column.entity.News;
@@ -28,7 +28,7 @@ public class NewsServiceImpl extends DefaulfAbstractService<News, String> implem
 	}
 
 	@Override
-	public List<Version> getVersionList(String id) {
+	public List<Attachment> getVersionList(String id) {
 		return newsDao.getVersionList(id);
 	}
 }

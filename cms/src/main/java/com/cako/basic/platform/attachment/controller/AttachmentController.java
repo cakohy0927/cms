@@ -1,4 +1,4 @@
-package com.cako.basic.version.controller;
+package com.cako.basic.platform.attachment.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,18 +23,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.cako.basic.platform.attachment.entity.Attachment;
+import com.cako.basic.platform.attachment.service.AttachmentService;
 import com.cako.basic.util.FileTools;
 import com.cako.basic.util.MessageObject;
-import com.cako.basic.version.entity.Version;
-import com.cako.basic.version.service.IVersionService;
 import com.orm.commons.utils.JsonMapper;
 
 @Controller
 @RequestMapping(value = "/version")
-public class VersionController {
+public class AttachmentController {
 
 	@Autowired
-	private IVersionService versionService;
+	private AttachmentService attachmentService;
 
 	private MessageObject message = new MessageObject();
 	
@@ -59,7 +59,7 @@ public class VersionController {
 		}
 		
 		Iterator<String> iterator = request.getFileNames();
-		List<Version> versions = new ArrayList<Version>();
+		List<Attachment> versions = new ArrayList<Attachment>();
 		while (iterator.hasNext()) {
 			MultipartFile multipartFile = request.getFile((String) iterator.next());
 			String type = multipartFile.getContentType();
@@ -74,7 +74,7 @@ public class VersionController {
 				fileSize = size + "KB";
 			}
 			String path = realPath + File.separatorChar + name;
-			Version version = new Version(name, new File(path).getPath(), type, fileSize,FileTools.getFileType(path));
+			Attachment version = new Attachment(name, new File(path).getPath(), type, fileSize,FileTools.getFileExtension(name));
             try {
 				FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), new File(realPath,multipartFile.getOriginalFilename()));
 			} catch (IOException e) {
@@ -102,9 +102,9 @@ public class VersionController {
 					FileInputStream fin = new FileInputStream(file);
 					long files = FileTools.getFileSizes(file);
 					String fileSize = FileTools.formetFileSize(files);//文件的大小
-					String type = FileTools.getFileExtension(file);//文件的后缀
-					Version version = new Version(file.getName(), "/upload/" + file.getName(), type, fileSize);
-					version = versionService.save(version);
+					String suffix = FileTools.getFileExtension(file.getName());//文件的后缀
+					Attachment version = new Attachment(file.getName(), "/upload/" + file.getName(), suffix, fileSize);
+					version = attachmentService.save(version);
 		            FileUtils.copyInputStreamToFile(fin, new File(realPath,file.getName()));
 		            versionIds += version.getId() + ",";
 				} catch (FileNotFoundException e) {
@@ -135,7 +135,7 @@ public class VersionController {
 			new File(realPath).mkdirs();
 		}
 		Iterator<String> iterator = request.getFileNames();
-		List<Version> versions = new ArrayList<Version>();
+		List<Attachment> versions = new ArrayList<Attachment>();
 		while (iterator.hasNext()) {
 			MultipartFile multipartFile = request.getFile((String) iterator.next());
 			String type = multipartFile.getContentType();
@@ -149,10 +149,10 @@ public class VersionController {
 			}else {
 				fileSize = size + "KB";
 			}
-			Version version = new Version(name, "/upload/" + name, type, fileSize);
-			version = versionService.save(version);
+			Attachment attachment = new Attachment(name, "/upload/" + name, type, fileSize);
+			attachment = attachmentService.save(attachment);
             FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), new File(realPath,multipartFile.getOriginalFilename()));
-			versions.add(version);
+			versions.add(attachment);
 		}
 		MessageObject message = new MessageObject();
 		message.setObject(versions);

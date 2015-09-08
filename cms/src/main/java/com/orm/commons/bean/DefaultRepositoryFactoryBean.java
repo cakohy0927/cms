@@ -11,10 +11,10 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import javax.persistence.EntityManager;
 import java.io.Serializable;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultRepositoryFactoryBean<R extends JpaRepository<T, I>, T, I extends Serializable> extends
 		JpaRepositoryFactoryBean<R, T, I> {
 	
-	@SuppressWarnings("rawtypes")
 	protected RepositoryFactorySupport createRepositoryFactory(EntityManager entityManager) {
 		return new DynamicQueryRepositoryFactory(entityManager);
 	}
@@ -27,7 +27,7 @@ public class DefaultRepositoryFactoryBean<R extends JpaRepository<T, I>, T, I ex
 			this.entityManager = entityManager;
 		}
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		
 		protected Object getTargetRepository(RepositoryMetadata metadata) {
 			return new CakoHyJpaRepostioryImpl(metadata.getDomainType(), this.entityManager);
 		}
