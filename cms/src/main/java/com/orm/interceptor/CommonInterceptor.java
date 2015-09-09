@@ -1,5 +1,7 @@
 package com.orm.interceptor;
 
+import java.util.Calendar;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -8,14 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.cako.basic.platform.user.entity.User;
-import com.cako.basic.platform.user.service.IUserService;
-import com.orm.commons.spring.SpringApplicationContext;
-
 public class CommonInterceptor extends HandlerInterceptorAdapter {
 	private final Logger log = LoggerFactory.getLogger(CommonInterceptor.class);
 	public static final String LAST_PAGE = "com.alibaba.lastPage";
 
+	private int openingTime; // openingTime 属性指定上班时间  
+    private int closingTime; // closingTime属性指定下班时间  
+    private String outsideOfficeHoursPage;// outsideOfficeHoursPage属性指定错误提示页面的URL  
+    private String ignoreResources;
+	
 	/**
 	 * 在业务处理器处理请求之前被调用 如果返回false 从当前的拦截器往回执行所有拦截器的afterCompletion(),再退出拦截器链
 	 * 如果返回true 执行下一个拦截器,直到所有的拦截器都执行完毕 再执行被拦截的Controller 然后进入拦截器链,
@@ -23,21 +26,23 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
-		User user = request.getSession().getAttribute("user") == null ? null : (User) request.getSession().getAttribute("user");
-		if (user == null) {
-			log.info("Interceptor：跳转到login页面！");
-			String username = request.getParameter("username");
-			String password = request.getParameter("password");
-			log.info( "username :" +username + " ,password :" + password );
-			IUserService iUserService = SpringApplicationContext.getBean(IUserService.class);
-			User u = iUserService.findUserByUsernameAndPassword(username, password);
-			if (u != null) 
+		Calendar cal = Calendar.getInstance();  
+		
+		System.out.println(request.getRequestURL());
+        int hour = cal.get(Calendar.HOUR_OF_DAY); // 获取当前时间  
+        if (openingTime <= hour && hour < closingTime) { // 判断当前是否处于工作时间段内  
+            return true;  
+        } else {  
+        	if (request.getRequestURL().toString().contains(ignoreResources)) {
+        		log.info("包含" + ignoreResources);
 				return true;
-			request.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
-			return false;
-		} else
-			return true;
+			}else {
+				outsideOfficeHoursPage = outsideOfficeHoursPage != null ? outsideOfficeHoursPage.trim() : outsideOfficeHoursPage;
+				response.sendRedirect(outsideOfficeHoursPage); // 返回提示页面  
+				log.info("进入其他的页面", "");
+				return false;  
+			}
+        }  
 	}
 
 	/**
@@ -46,7 +51,7 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)
 			throws Exception {
-//		log.info("==============执行顺序: 2、postHandle================");
+		log.info("==============执行顺序: 2、postHandle================");
 		if (modelAndView != null) { // 加入当前时间
 			modelAndView.addObject("sessionid",request.getSession().getId().toUpperCase());
 		}
@@ -59,7 +64,40 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	 */
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-//		log.info("==============执行顺序: 3、afterCompletion================");
+		response.sendRedirect(outsideOfficeHoursPage != null ? outsideOfficeHoursPage.trim() : outsideOfficeHoursPage); // 返回提示页面  
+		log.info("==============执行顺序: 3、afterCompletion================");
 	}
 
+	public int getOpeningTime() {
+		return openingTime;
+	}
+
+	public void setOpeningTime(int openingTime) {
+		this.openingTime = openingTime;
+	}
+
+	public int getClosingTime() {
+		return closingTime;
+	}
+
+	public void setClosingTime(int closingTime) {
+		this.closingTime = closingTime;
+	}
+
+	public String getOutsideOfficeHoursPage() {
+		return outsideOfficeHoursPage;
+	}
+
+	public void setOutsideOfficeHoursPage(String outsideOfficeHoursPage) {
+		this.outsideOfficeHoursPage = outsideOfficeHoursPage;
+	}
+
+	public String getIgnoreResources() {
+		return ignoreResources;
+	}
+
+	public void setIgnoreResources(String ignoreResources) {
+		this.ignoreResources = ignoreResources;
+	}
+	
 }

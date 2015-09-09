@@ -15,6 +15,7 @@ import org.apache.shiro.authc.AuthenticationException;
 import org.springframework.beans.BeansException;
 
 import com.cako.basic.platform.user.entity.User;
+import com.orm.config.InitEnvironment;
 
 public class ShiroFilter implements Filter {
 
@@ -27,6 +28,8 @@ public class ShiroFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		try {
+			InitEnvironment environment = InitEnvironment.getInitEnvironmentInstance();
+			System.out.println(environment);
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpSession session = httpRequest.getSession(true);
 			User user = (User) session.getAttribute("user");

@@ -31,7 +31,7 @@
  	<!-- task任务扫描注解 -->  
     <task:annotation-driven/>  
 
-    <bean id="SpringApplicationContext" class="com.orm.commons.spring.SpringApplicationContext" lazy-init="true"/>
+    <bean id="springContextHolder" class="com.orm.commons.spring.SpringContextHolder" lazy-init="false"/>
     <!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
     <context:component-scan base-package="com.cako">
         <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
@@ -102,9 +102,35 @@
 	    <property name="order" value="2"/>
 	</bean>
 	
+	
+	<!-- 将多个配置文件位置放到列表中 -->  
+    <bean id="propertyResources" class="java.util.ArrayList">  
+        <constructor-arg>  
+            <list>  
+              <!-- 这里支持多种寻址方式：classpath和file -->  
+              <value>classpath*:/application.development.properties</value>  
+              <!-- 推荐使用file的方式引入，这样可以将配置和代码分离 -->  
+              <value>classpath*:/InitEnvironment.properties</value>  
+            </list>  
+        </constructor-arg>  
+    </bean>  
+      
+    <!-- 将配置文件读取到容器中，交给Spring管理 -->  
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
+        <property name="locations" ref="propertyResources" />  
+    </bean>  
+	
+	<!-- <context:property-placeholder location="classpath*:/InitEnvironment.properties" /> -->
+	<bean id="initEnvironment" class="com.orm.config.InitEnvironment" init-method="init" lazy-init="false" scope="">
+	    <property name="outsideOfficeHoursPage" value="${outsideOfficeHoursPage}"/>
+	    <property name="ignoreResources" value="${ignoreResources}"/>
+	    <property name="errorPage" value="${errorPage}" />
+	    <property name="cmsIndex" value="${cmsIndex}"/>
+	</bean>
+	
     <!-- development 环境 -->
     <beans profile="development">
-        <context:property-placeholder ignore-unresolvable="true"  location="classpath*:/application.development.properties"/>
+        <!-- <context:property-placeholder ignore-unresolvable="true"  location="classpath*:/application.development.properties"/> -->
         <!-- 数据源配置, 使用DBCP数据库连接池 -->
         <bean id="dataSourceSpied" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
             <!-- Connection Info -->
