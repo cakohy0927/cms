@@ -13,47 +13,54 @@ import org.hibernate.annotations.GenericGenerator;
 
 @MappedSuperclass
 @Access(AccessType.PROPERTY)
-public class IdEntity{
-	protected String id;//ID
-    protected Date createTime;
-    protected Date updateTime;
+public class IdEntity {
+	protected Date createTime = new Date();
+	protected String id;// ID
+	protected Date updateTime;
 
-    @Id
-    @GeneratedValue(generator="system-uuid")
-    @GenericGenerator(name="system-uuid", strategy="uuid2")
-    public String getId() {
-        return id;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		IdEntity other = (IdEntity) obj;
+		if (getId() == null) {
+			return false;
+		}
+		return getId().equals(other.getId());
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	@Column(updatable = false)
+	public Date getCreateTime() {
+		return createTime;
+	}
 
-    @Column(updatable=false)
-    public Date getCreateTime() {
-        return createTime;
-    }
+	@Id
+	@GeneratedValue(generator = "system-uuid")
+	@GenericGenerator(name = "system-uuid", strategy = "uuid2")
+	public String getId() {
+		return id;
+	}
 
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
+	public Date getUpdateTime() {
+		return updateTime;
+	}
 
-    public Date getUpdateTime() {
-        return updateTime;
-    }
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-        IdEntity other = (IdEntity)obj;
-        if (getId() == null) {
-            return false;
-        }
-        return getId().equals(other.getId());
-    }
+	public void setUpdateTime(Date updateTime) {
+		this.updateTime = updateTime;
+	}
 }
