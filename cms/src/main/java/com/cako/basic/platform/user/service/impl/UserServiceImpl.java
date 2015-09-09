@@ -7,6 +7,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,7 @@ import com.google.common.collect.Sets;
 import com.orm.commons.encryption.MD5Encryption;
 import com.orm.commons.exception.ServiceException;
 import com.orm.commons.service.impl.DefaulfAbstractService;
+import com.orm.config.InitEnvironment;
 
 @Component
 @Transactional(readOnly = false)
@@ -198,10 +202,12 @@ public class UserServiceImpl extends DefaulfAbstractService<User, String> implem
 	 * com.cako.basic.platform.user.service.IUserService#findUserByLoginName
 	 * (java.lang.String)
 	 */
-	public User findUserByLoginName(String loginName) {
+	public User findUserByLoginName(String loginName) throws ServiceException {
 		if (isRootUser(loginName)) {
+			InitEnvironment environment = InitEnvironment.getInitEnvironmentInstance();
 			User user = new User();
 			user.setId("root");
+			user.setPassword(MD5Encryption.MD5(environment.getInitPassword()));
 			user.setRealName("管理员");
 			user.setLoginName("root");
 			user.setStatus(User.Status.NORMAL);
@@ -249,5 +255,14 @@ public class UserServiceImpl extends DefaulfAbstractService<User, String> implem
 			}
 		}
 		return set;
+	}
+
+	public void setLogin(String userId, String password) {
+		Subject currentUser = SecurityUtils.getSubject();
+		if (!currentUser.isAuthenticated()) {
+			UsernamePasswordToken token = new UsernamePasswordToken(userId, password);
+			token.setRememberMe(true);
+			currentUser.login(token);
+		}
 	}
 }

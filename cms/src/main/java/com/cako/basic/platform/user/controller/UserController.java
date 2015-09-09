@@ -38,7 +38,7 @@ import com.orm.commons.utils.PageSupport;
 import com.orm.commons.utils.Pager;
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/platform/user")
 public class UserController {
 	@Autowired
 	private IUserService userService;
@@ -51,7 +51,7 @@ public class UserController {
 
 	@RequestMapping(value = "/create", method = { RequestMethod.GET, RequestMethod.POST })
 	public String add() {
-		return "user/create";
+		return "system/user/create";
 	}
 
 	@RequestMapping(value = "/save", method = { RequestMethod.GET, RequestMethod.POST })
@@ -85,7 +85,7 @@ public class UserController {
 
 	@RequestMapping(value = "/list", method = { RequestMethod.GET, RequestMethod.POST })
 	public String list(HttpServletRequest request, Model model) {
-		return "user/list";
+		return "system/user/list";
 	}
 
 	@RequestMapping(value = "/getListJson.json", method = { RequestMethod.GET, RequestMethod.POST })
@@ -98,7 +98,12 @@ public class UserController {
 		paramMap.put("username_li", username);
 		long totlaRecord = userService.findByEntityList(paramMap).size();
 		Pager page = new Pager(totlaRecord, currentPage);
-		Pageable pageable = new PageRequest(page.getCurrentPage() - 1, pageSize);
+		page.setPageSize(pageSize);
+		int page0 = 0;
+		if (page.getCurrentPage() - 1 >= 0) {
+			page0 = page.getCurrentPage() - 1;
+		}
+		Pageable pageable = new PageRequest(page0, page.getPageSize());
 		PageSupport pageSupport = new PageSupport(pageable, new Sort(Sort.Direction.DESC, "createTime"));
 		Page<User> pageInfo = userService.findByPage(paramMap, pageSupport);
 		List<UserTree> lists = new ArrayList<UserTree>();

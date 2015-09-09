@@ -126,6 +126,8 @@
 	    <property name="ignoreResources" value="${ignoreResources}"/>
 	    <property name="errorPage" value="${errorPage}" />
 	    <property name="cmsIndex" value="${cmsIndex}"/>
+	    <property name="initPassword" value="${initPassword}"/>
+	    <property name="initUsername" value="${initUsername}"/>
 	</bean>
 	
     <!-- development 环境 -->

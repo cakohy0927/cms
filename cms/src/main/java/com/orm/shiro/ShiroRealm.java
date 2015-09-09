@@ -1,7 +1,6 @@
 package com.orm.shiro;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -15,22 +14,26 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cako.basic.platform.user.entity.User;
 import com.cako.basic.platform.user.service.IUserService;
 import com.orm.commons.exception.ServiceException;
+import com.orm.config.InitEnvironment;
 
 public class ShiroRealm extends AuthorizingRealm {
 
-	private static Logger logger = Logger.getLogger("ShiroRealm");
+	private final static Logger logger = LoggerFactory.getLogger(InitEnvironment.class);
 
 	@Autowired
 	private IUserService userService;
 
 	@Override
-	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+	protected AuthorizationInfo doGetAuthorizationInfo(
+			PrincipalCollection principals) {
 		try {
 			String username = (String) principals.getPrimaryPrincipal();
 			logger.info("用户名称：" + username);
@@ -40,7 +43,8 @@ public class ShiroRealm extends AuthorizingRealm {
 			for (String string : set) {
 				System.out.println(string);
 			}
-			authorizationInfo.setStringPermissions(userService.findPermissionsByLoginName(username));
+			authorizationInfo.setStringPermissions(userService
+					.findPermissionsByLoginName(username));
 			return authorizationInfo;
 		} catch (BeansException e) {
 			e.printStackTrace();
@@ -49,14 +53,11 @@ public class ShiroRealm extends AuthorizingRealm {
 	}
 
 	@Override
-	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
+	protected AuthenticationInfo doGetAuthenticationInfo(
+			AuthenticationToken authcToken) throws AuthenticationException {
 		try {
 			String loginName = (String) authcToken.getPrincipal();
-			User user = userService.findUserByUsername(loginName);
-			if (userService.isRootUser(loginName)) {
-				logger.info("超级管理员");
-				return new SimpleAuthenticationInfo("root", "aeeaa849d945f2e80a5ba468672edc54", ByteSource.Util.bytes("root21a5cb0e348522d2b9e77bf5e32688a2"), getName());
-			}
+			User user = userService.findUserByLoginName(loginName);
 			if (user == null) {
 				throw new AuthorizationException();
 			}
@@ -66,14 +67,22 @@ public class ShiroRealm extends AuthorizingRealm {
 			if (user.getStatus() == User.Status.LOCKED) {
 				throw new LockedAccountException();
 			}
+			if (userService.isRootUser(loginName)) {
+				logger.info("超级管理员");
+				return new SimpleAuthenticationInfo("root", user.getPassword(),
+						ByteSource.Util.bytes("root" + user.getPassword()),
+						getName());
+			}
 			SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
 			authorizationInfo.setRoles(userService.findRolesByLoginName(loginName));
 			Set<String> set = userService.findPermissionsByLoginName(loginName);
 			for (String string : set) {
 				System.out.println(string);
 			}
-			SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(loginName, user.getPassword(), getName());
-			authorizationInfo.setStringPermissions(userService.findPermissionsByLoginName(loginName));
+			SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
+					loginName, user.getPassword(), getName());
+			authorizationInfo.setStringPermissions(userService
+					.findPermissionsByLoginName(loginName));
 			return authenticationInfo;
 		} catch (BeansException e) {
 			e.printStackTrace();

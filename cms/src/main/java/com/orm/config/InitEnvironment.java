@@ -11,6 +11,8 @@ public class InitEnvironment {
 	private String ignoreResources;// 需要忽略的文件或者路径
 	private String errorPage;// 前台错误页面
 	private String cmsIndex;// 前台首页
+	private String initUsername;
+	private String initPassword;
 	private static InitEnvironment environment  = null;
 
 	public void init() {
@@ -60,12 +62,28 @@ public class InitEnvironment {
 	public void setCmsIndex(String cmsIndex) {
 		this.cmsIndex = cmsIndex;
 	}
+	public String getInitPassword() {
+		return initPassword;
+	}
+	
+	public String getInitUsername() {
+		return initUsername;
+	}
+	
+	public void setInitPassword(String initPassword) {
+		this.initPassword = initPassword;
+	}
+	
+	public void setInitUsername(String initUsername) {
+		this.initUsername = initUsername;
+	}
 
 	@Override
 	public String toString() {
 		return "InitEnvironment [outsideOfficeHoursPage="
 				+ outsideOfficeHoursPage + ", ignoreResources="
 				+ ignoreResources + ", errorPage=" + errorPage + ", cmsIndex="
-				+ cmsIndex + "]";
+				+ cmsIndex + ", initUsername=" + initUsername
+				+ ", initPassword=" + initPassword + "]";
 	}
 }

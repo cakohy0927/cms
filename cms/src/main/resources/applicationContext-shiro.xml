@@ -83,6 +83,7 @@
 				/login=anon
 				/logout=logout
 				/error.jsp=anon
+				/platform/**=anon
 				/big/**=anon
 				/static/**=anon
 				/** = user,anyRoles

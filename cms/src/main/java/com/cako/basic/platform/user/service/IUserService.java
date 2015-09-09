@@ -44,13 +44,14 @@ public interface IUserService {
 
 	public abstract User findUserByUsernameAndPassword(HttpServletRequest request) throws ServiceException;
 
-	public abstract User findUserByLoginName(String paramString);
+	public abstract User findUserByLoginName(String paramString) throws ServiceException;
 	
-	public Set<String> findPermissionsByLoginName(String loginName);
+	public abstract Set<String> findPermissionsByLoginName(String loginName);
 	
-	public Set<String> findRolesByLoginName(String loginName);
+	public abstract Set<String> findRolesByLoginName(String loginName);
 	
-	public boolean isRootUser(String loginName);
-	
+	public abstract boolean isRootUser(String loginName);
+
+	abstract void setLogin(String userId, String password);
 	
 }

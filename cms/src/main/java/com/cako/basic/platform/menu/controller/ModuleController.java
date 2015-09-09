@@ -35,7 +35,7 @@ import com.orm.commons.utils.PageSupport;
 import com.orm.commons.utils.Pager;
 
 @Controller
-@RequestMapping("/menu")
+@RequestMapping("/platform/menu")
 public class ModuleController {
 
 	@Autowired
@@ -44,7 +44,6 @@ public class ModuleController {
 	private IRoleService roleService;
 
 	@RequestMapping(value = "/getListJson.json", method = { RequestMethod.GET, RequestMethod.POST })
-	@ResponseBody
 	public String getListJson(HttpServletRequest request) {
 		try {
 			String currentPage = request.getParameter("page");
@@ -52,7 +51,11 @@ public class ModuleController {
 			String name = "目录";
 			long totlaRecord = menuService.findModuleByName(name, moduleName).size();
 			Pager page = new Pager(totlaRecord, currentPage);
-			Pageable pageable = new PageRequest(page.getCurrentPage() - 1, page.getPageSize());
+			int page0 = 0;
+			if (page.getCurrentPage() - 1 >= 0) {
+				page0 = page.getCurrentPage() - 1;
+			}
+			Pageable pageable = new PageRequest(page0, page.getPageSize());
 			PageSupport pageSupport = new PageSupport(pageable, new Sort(Sort.Direction.DESC, "createTime"));
 			Page<Module> pageInfo = menuService.findPageModuleByName(name, pageSupport, moduleName);
 			List<MenuTable> lists = new ArrayList<MenuTable>();

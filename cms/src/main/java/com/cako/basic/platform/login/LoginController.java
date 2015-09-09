@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -14,6 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +38,7 @@ import com.orm.commons.utils.JsonMapper;
 @Controller
 @RequestMapping("/")
 public class LoginController {
-	private static Logger logger = Logger.getLogger("LoginController");
+	private final static Logger logger = LoggerFactory.getLogger(LoginController.class);
 	@Resource
 	private IUserService userService;
 	
@@ -65,17 +66,15 @@ public class LoginController {
 
 	@RequestMapping(value = { "/login", "/" }, method = { RequestMethod.GET, RequestMethod.POST })
 	public ModelAndView login(String loginName, String password, Model model,HttpServletRequest request) throws LoginException, ServiceException {
-		logger.info("进入了登陆的方法  : LoginController.login()");
 		try {
 			if (StringUtils.isEmpty(loginName)) {
 				model.addAttribute("info", "");
 				return new ModelAndView("login");
 			} else {
-				User user = userService.findUserByUsername(loginName);
+				User user = userService.findUserByLoginName(loginName);
 				// 如果登陆成功
 				if (user != null) {
 					if (StringUtils.equals(user.getPassword(), MD5Encryption.MD5(password))) {
-						System.out.println("...............:" + user.getRoles().size());
 						setLogin(user.getLoginName(), user.getPassword());
 						request.getSession().setAttribute("user", user);
 						request.getSession().setAttribute(SystemContext.GLOBLE_USER_SESSION, user);
@@ -83,11 +82,11 @@ public class LoginController {
 						String path = request.getContextPath() + "/index?SESSIONID="+request.getSession().getId().toUpperCase();
 						return new ModelAndView(new RedirectView(path));
 					} else {
-						model.addAttribute("info", "你输入的密码不对");
+						model.addAttribute("info", "你输入的用户名密码不对");
 						return new ModelAndView("login");
 					}
 				} else {
-					model.addAttribute("info", "你输入的用户名");
+					model.addAttribute("info", "你输入的用户名不对");
 					return new ModelAndView("login");
 				}
 			}
