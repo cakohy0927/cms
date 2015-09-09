@@ -27,40 +27,8 @@
             </list>
         </property>
     </bean>
-    <!-- 各种类型值注入的写法 -->
-    <bean id="messagebean"  class="com.orm.commons.bean.MessageBean">
-        <property name="props">
-            <props>
-                <prop key="url">http://www.tom.com</prop>
-                <prop key="username">zhangsan</prop>
-                <prop key="password">123456789</prop>
-            </props>
-        </property>
-        <property name="books">
-            <map>
-                <entry key="10" value="CoreJava"/>
-                <entry key="11" value="JavaWeb" />
-                <entry key="12" value="SSH2"/>
-            </map>
-        </property>
-        <property name="friends">
-            <set>
-                <value>张三</value>
-                <value>李四</value>
-                <value>王五</value>
-            </set>
-        </property>
 
-        <property name="citys">
-            <list>
-                <value>北京</value>
-                <value>上海</value>
-                <value>深圳</value>
-            </list>
-        </property>
-    </bean>
-
-    <!-- task任务扫描注解 -->  
+ 	<!-- task任务扫描注解 -->  
     <task:annotation-driven/>  
 
     <bean id="SpringApplicationContext" class="com.orm.commons.spring.SpringApplicationContext" lazy-init="true"/>
