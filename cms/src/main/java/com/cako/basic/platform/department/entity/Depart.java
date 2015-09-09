@@ -56,8 +56,8 @@ public class Depart extends IdEntity {
 		return depart;
 	}
 
-	public void setDepartment(Depart department) {
-		this.depart = department;
+	public void setDepart(Depart depart) {
+		this.depart = depart;
 	}
 	
 	public void setIsChildern(Boolean isChildern) {

@@ -57,7 +57,7 @@ public class DepartmentController {
 			if (StringUtils.isNotEmpty(parentId)) {
 				Depart depart = departmentService.get(parentId);
 				if (depart != null) {
-					department.setDepartment(depart);
+					department.setDepart(depart);
 					department.setIsChildern(Boolean.TRUE);
 				}
 			}
