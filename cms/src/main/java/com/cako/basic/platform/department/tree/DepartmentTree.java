@@ -1,6 +1,7 @@
 package com.cako.basic.platform.department.tree;
 
-import com.cako.basic.platform.department.entity.Department;
+import com.cako.basic.platform.department.entity.Depart;
+
 
 public class DepartmentTree {
 
@@ -11,13 +12,13 @@ public class DepartmentTree {
 	private String pid;
 	private String pName;
 	private Boolean isChildern;
-	public DepartmentTree(Department department,String state) {
+	public DepartmentTree(Depart department,String state) {
 		this.id = department.getId();
 		this.text = department.getName();
 		this.state = state;
-		if (department.getDepartment() != null) {
-			this.pid = department.getDepartment().getId();
-			this.pName = department.getDepartment().getName();
+		if (department.getDepart() != null) {
+			this.pid = department.getDepart().getId();
+			this.pName = department.getDepart().getName();
 		}
 		this.isChildern = department.getIsChildern();
 	}

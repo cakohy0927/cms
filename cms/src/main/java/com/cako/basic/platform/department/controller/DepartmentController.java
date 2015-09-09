@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cako.basic.platform.department.entity.Department;
+import com.cako.basic.platform.department.entity.Depart;
 import com.cako.basic.platform.department.service.IDepartmentService;
 import com.cako.basic.platform.department.tree.DepartmentTree;
 import com.cako.basic.util.MessageObject;
@@ -51,11 +51,11 @@ public class DepartmentController {
 	 * @return
 	 */
 	@RequestMapping(value = "save", method = RequestMethod.POST)
-	public void save(HttpServletRequest request, Department department, HttpServletResponse response) {
+	public void save(HttpServletRequest request, Depart department, HttpServletResponse response) {
 		try {
 			String parentId = request.getParameter("parentId");
 			if (StringUtils.isNotEmpty(parentId)) {
-				Department depart = departmentService.get(parentId);
+				Depart depart = departmentService.get(parentId);
 				if (depart != null) {
 					department.setDepartment(depart);
 					department.setIsChildern(Boolean.TRUE);
@@ -88,7 +88,7 @@ public class DepartmentController {
 	 * @return
 	 */
 	@RequestMapping(value = "edit", method = RequestMethod.POST)
-	public String edit(HttpServletRequest request, Model model, Department department) {
+	public String edit(HttpServletRequest request, Model model, Depart department) {
 
 		return "";
 	}
@@ -138,12 +138,12 @@ public class DepartmentController {
 			}
 			Pageable pageable = new PageRequest(current, page.getPageSize());
 			PageSupport pageSupport = new PageSupport(pageable, new Sort(Sort.Direction.DESC, "createTime"));
-			Page<Department> pageInfo = departmentService.queryPageByMap(paramMap, pageSupport);
+			Page<Depart> pageInfo = departmentService.queryPageByMap(paramMap, pageSupport);
 			List<DepartmentTree> lists = new ArrayList<DepartmentTree>();
-			for (Department department : pageInfo.getContent()) {
+			for (Depart department : pageInfo.getContent()) {
 				paramMap = new HashMap<String, Object>();
 				paramMap.put("department.id_eq", department.getId());
-				List<Department> list = departmentService.queryByMap(paramMap);
+				List<Depart> list = departmentService.queryByMap(paramMap);
 				department.setIsChildern(list != null && list.size() > 0 ? false : true);
 				lists.add(new DepartmentTree(department, list != null && list.size() > 0 ? "closed" : ""));
 			}
@@ -166,11 +166,11 @@ public class DepartmentController {
 				paramMap.put("isChildern_eq", Boolean.FALSE);
 			}
 			List<DepartmentTree> lists = new ArrayList<DepartmentTree>();
-			List<Department> departments = departmentService.queryByMap(paramMap);
-			for (Department department : departments) {
+			List<Depart> departments = departmentService.queryByMap(paramMap);
+			for (Depart department : departments) {
 				paramMap = new HashMap<String, Object>();
 				paramMap.put("department.id_eq", department.getId());
-				List<Department> list = departmentService.queryByMap(paramMap);
+				List<Depart> list = departmentService.queryByMap(paramMap);
 				department.setIsChildern(list != null && list.size() > 0 ? false : true);
 				lists.add(new DepartmentTree(department, list != null && list.size() > 0 ? "closed" : ""));
 			}

@@ -14,8 +14,8 @@ import com.orm.commons.utils.IdEntity;
  *
  */
 @Entity
-@Table(name = "system_department")
-public class Department extends IdEntity {
+@Table(name = "system_depart")
+public class Depart extends IdEntity {
 
 	/**
 	 * 部门ID
@@ -30,7 +30,7 @@ public class Department extends IdEntity {
 	/**
 	 * 上级节点
 	 */
-	private Department department;
+	private Depart depart;
 	
 	private Boolean isChildern = Boolean.FALSE;
 
@@ -52,12 +52,12 @@ public class Department extends IdEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "p_id")
-	public Department getDepartment() {
-		return department;
+	public Depart getDepart() {
+		return depart;
 	}
 
-	public void setDepartment(Department department) {
-		this.department = department;
+	public void setDepartment(Depart department) {
+		this.depart = department;
 	}
 	
 	public void setIsChildern(Boolean isChildern) {

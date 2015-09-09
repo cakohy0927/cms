@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import com.cako.basic.platform.department.entity.Department;
+import com.cako.basic.platform.department.entity.Depart;
 import com.cako.basic.platform.role.entity.Role;
 import com.orm.commons.utils.IdEntity;
 
@@ -40,7 +40,7 @@ public class User extends IdEntity {
 	/**
 	 * 部门
 	 */
-	private List<Department> departments = new ArrayList<Department>();
+	private List<Depart> departments = new ArrayList<Depart>();
 
 	public User() {
 
@@ -142,13 +142,13 @@ public class User extends IdEntity {
 		return roles;
 	}
 
-	public void setDepartments(List<Department> departments) {
+	public void setDepartments(List<Depart> departments) {
 		this.departments = departments;
 	}
 
 	@ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	@JoinTable(name = "system_user_dept", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "dept_id"))
-	public List<Department> getDepartments() {
+	public List<Depart> getDepartments() {
 		return departments;
 	}
 

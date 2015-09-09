@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cako.basic.platform.department.entity.Department;
+import com.cako.basic.platform.department.entity.Depart;
 import com.cako.basic.platform.department.service.IDepartmentService;
 import com.cako.basic.platform.role.entity.Role;
 import com.cako.basic.platform.role.service.IRoleService;
@@ -209,7 +209,7 @@ public class UserController {
 			String userIds = request.getParameter("userIds");
 			Map<String, Object> paramsMap = new HashMap<String, Object>();
 			paramsMap.put("id_in", ListTools.toArrayList(deptIds));
-			List<Department> departments = departmentService.queryByMap(paramsMap);
+			List<Depart> departments = departmentService.queryByMap(paramsMap);
 			String[] ids = userIds.split(",");
 			for (String id : ids) {
 				User user = userService.get(id);
