@@ -13,9 +13,18 @@
 body {
 	font-size: 14px;
 }
+img {
+    vertical-align: middle;
+    float: right;
+    margin-top: -38px;
+    z-index: 10000;
+}
 </style>
 <script type="text/javascript">
-	
+	window.onload = function (){
+		var time = new Date().getTime();
+		document.getElementById("reqImages").src="${ctx}/validateCodeServlet.images?time=" + time;
+	}
 </script>
 </head>
 <body>
@@ -50,8 +59,21 @@ body {
 							</div>
 						</div>
 						<div class="form-group">
+							<div class="col-xs-12  ">
+								<div class="input-group">
+									<span class="input-group-addon">
+										<span class="glyphicon glyphicon-lock"></span>
+									</span> 
+									<input type="password" id="password" name="password" class="form-control" placeholder="密码">
+									<span>
+										<img alt="" src="" id="reqImages">
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
 							<div style="margin-bottom: 5px;" class="col-xs-4 col-xs-offset-4">
-								<span style="color:red;">${info}</span>
+								<span style="color:red;width:100%">${info}</span>
 							</div>
 						</div>
 						<div class="form-group form-actions">
