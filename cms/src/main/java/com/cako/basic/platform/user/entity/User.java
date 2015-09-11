@@ -17,6 +17,7 @@ import org.hibernate.annotations.FetchMode;
 import com.cako.basic.platform.department.entity.Depart;
 import com.cako.basic.platform.role.entity.Role;
 import com.orm.commons.utils.IdEntity;
+import com.orm.enums.SysEnum;
 
 @Entity
 @Table(name = "system_user")
@@ -24,32 +25,6 @@ public class User extends IdEntity {
 	public interface ParameterUtils {
 		public final static String MAN = "man";
 		public final static String WOMEN = "women";
-	}
-
-	/**
-	 *
-	 * @描述：INIT 初始状态，LOCKED 锁定，NORMAL 普通状态
-	 * @author HUANGYUAN
-	 * @TIME:2015年9月11日 下午11:07:53
-	 */
-	public static enum Status {
-		INIT, LOCKED, NORMAL;
-
-		private Status() {
-		}
-	}
-
-	/**
-	 *
-	 * @描述：ADMIN 管理员; GENERAL 普通用户;MEMBER 普通会员;LEAGUER_MEMBER 高级会员
-	 * @author HUANGYUAN
-	 * @TIME:2015年9月11日 下午11:08:34
-	 */
-	public static enum UserType {
-		ADMIN, GENERAL, LEAGUER_MEMBER, MEMBER;
-
-		private UserType() {
-		}
 	}
 
 	private String address;
@@ -73,9 +48,9 @@ public class User extends IdEntity {
 
 	private String sex;
 
-	public User.Status status = Status.INIT;
+	public SysEnum.Status status = SysEnum.Status.INIT;
 
-	private User.UserType type = UserType.GENERAL;
+	private SysEnum.UserType type = SysEnum.UserType.GENERAL;
 
 	public User() {
 
@@ -139,11 +114,11 @@ public class User extends IdEntity {
 		return sex;
 	}
 
-	public Status getStatus() {
+	public SysEnum.Status getStatus() {
 		return status;
 	}
 
-	public User.UserType getType() {
+	public SysEnum.UserType getType() {
 		return type;
 	}
 
@@ -195,11 +170,11 @@ public class User extends IdEntity {
 		this.sex = sex;
 	}
 
-	public void setStatus(Status status) {
+	public void setStatus(SysEnum.Status status) {
 		this.status = status;
 	}
 
-	public void setType(User.UserType type) {
+	public void setType(SysEnum.UserType type) {
 		this.type = type;
 	}
 

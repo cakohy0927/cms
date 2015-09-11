@@ -28,38 +28,35 @@ import com.orm.commons.encryption.MD5Encryption;
 import com.orm.commons.exception.ServiceException;
 import com.orm.commons.service.impl.DefaulfAbstractService;
 import com.orm.config.InitEnvironment;
+import com.orm.enums.SysEnum;
 
 @Component
 @Transactional(readOnly = false)
 public class UserServiceImpl extends DefaulfAbstractService<User, String> implements IUserService {
 
 	@Autowired
-	private UserDao userDao;
+	private ModuleDao moduleDao;
 
 	@Autowired
 	private RoleDao roleDao;
-	
+
 	@Autowired
-	private ModuleDao moduleDao;
+	private UserDao userDao;
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
-	 * com.orm.platform.user.service.impl.UserService#save(com.webapp.userInfo
-	 * .entity.User)
+	 * com.orm.platform.user.service.impl.UserService#delete(java.lang.String)
 	 */
 	@Override
-	public User save(User user) {
-		if (StringUtils.isEmpty(user.getId())) {
-			user.setPassword(MD5Encryption.MD5(user.getPassword()));
-		}
-		return userDao.saveAndFlush(user);
+	public void delete(String id) {
+		userDao.delete(id);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.orm.platform.user.service.impl.UserService#findAll()
 	 */
 	@Override
@@ -69,7 +66,133 @@ public class UserServiceImpl extends DefaulfAbstractService<User, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
+	 * @see
+	 * com.orm.platform.user.service.impl.UserService#findByEntityList(java.
+	 * util.Map)
+	 */
+	@Override
+	public List<User> findByEntityList(Map<String, Object> paramMap) {
+		return userDao.queryByMap(paramMap);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * com.orm.platform.user.service.impl.UserService#findByPage(java.util.Map,
+	 * org.springframework.data.domain.Pageable)
+	 */
+	@Override
+	public Page<User> findByPage(Map<String, Object> paramMap, Pageable pageable) {
+		return userDao.queryPageByMap(paramMap, pageable);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * com.orm.platform.user.service.impl.UserService#findByPage(org.springframework
+	 * .data.domain.Pageable)
+	 */
+	@Override
+	public Page<User> findByPage(Pageable pageable) {
+		return userDao.findByPage(pageable);
+	}
+
+	@Override
+	public Set<String> findPermissionsByLoginName(String loginName) {
+		Set<String> set = Sets.newHashSet();
+		if (isRootUser(loginName)) {
+			List<Module> modules = this.moduleDao.findAll();
+			for (Module module : modules) {
+				if (StringUtils.isNotEmpty(module.getPermission())) {
+					set.add(module.getPermission());
+				}
+			}
+		} else {
+			User user = this.userDao.findUserByUsername(loginName);
+			for (Role role : user.getRoles()) {
+				List<Module> modules = roleDao.getModuleList(role.getId());
+				for (Module module : modules) {
+					if (StringUtils.isNotEmpty(module.getPermission())) {
+						set.add(module.getPermission());
+					}
+				}
+			}
+		}
+		return set;
+	}
+
+	@Override
+	public Set<String> findRolesByLoginName(String loginName) {
+		Set<String> set = Sets.newHashSet();
+		if (isRootUser(loginName)) {
+			List<Role> roles = roleDao.findAll();
+			for (Role role : roles) {
+				set.add(role.getId());
+			}
+		} else {
+			User user = userDao.findUserByUsername(loginName);
+			List<Role> roles = userDao.finRolesByUserId(user.getId());
+			for (Role role : roles) {
+				set.add(role.getId());
+			}
+		}
+		return set;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * com.cako.basic.platform.user.service.IUserService#findUserByLoginName
+	 * (java.lang.String)
+	 */
+	@Override
+	public User findUserByLoginName(String loginName) throws ServiceException {
+		if (isRootUser(loginName)) {
+			InitEnvironment environment = InitEnvironment.getInitEnvironmentInstance();
+			User user = new User();
+			user.setId("root");
+			user.setPassword(MD5Encryption.MD5(environment.getInitPassword()));
+			user.setRealName("管理员");
+			user.setLoginName("root");
+			user.setStatus(SysEnum.Status.NORMAL);
+			return user;
+		}
+		return this.userDao.findUserByUsername(loginName);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * com.orm.platform.user.service.impl.UserService#findUserByUsername(java
+	 * .lang.String)
+	 */
+	@Override
+	public User findUserByUsername(String loginName) throws ServiceException {
+		return userDao.findUserByUsername(loginName);
+	}
+
+	@Override
+	public User findUserByUsernameAndPassword(HttpServletRequest request) throws ServiceException {
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		User user = userDao.findUserByUsername(username);
+		if (user != null) {
+			if (StringUtils.equals(user.getPassword(), MD5Encryption.MD5(password))) {
+				request.getSession().setAttribute("user", user);
+				return user;
+			}
+		}
+		return null;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
 	 * @see
 	 * com.orm.platform.user.service.impl.UserService#findUserByUsernameAndPassword
 	 * (java.lang.String, java.lang.String)
@@ -82,54 +205,19 @@ public class UserServiceImpl extends DefaulfAbstractService<User, String> implem
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
-	 * com.orm.platform.user.service.impl.UserService#findByPage(org.springframework
-	 * .data.domain.Pageable)
+	 * com.cako.basic.platform.user.service.IUserService#finRolesByUserId(java
+	 * .lang.String)
 	 */
 	@Override
-	public Page<User> findByPage(Pageable pageable) {
-		return userDao.findByPage(pageable);
+	public List<Role> finRolesByUserId(String userId) {
+		return userDao.finRolesByUserId(userId);
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.orm.platform.user.service.impl.UserService#findByPage(java.util.Map,
-	 * org.springframework.data.domain.Pageable)
-	 */
-	@Override
-	public Page<User> findByPage(Map<String, Object> paramMap, Pageable pageable) {
-		return userDao.queryPageByMap(paramMap, pageable);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.orm.platform.user.service.impl.UserService#findByEntityList(java.
-	 * util.Map)
-	 */
-	@Override
-	public List<User> findByEntityList(Map<String, Object> paramMap) {
-		return userDao.queryByMap(paramMap);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.orm.platform.user.service.impl.UserService#delete(java.lang.String)
-	 */
-	@Override
-	public void delete(String id) {
-		userDao.delete(id);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.orm.platform.user.service.impl.UserService#get(java.lang.String)
 	 */
 	@Override
@@ -137,18 +225,7 @@ public class UserServiceImpl extends DefaulfAbstractService<User, String> implem
 		return userDao.findOne(id);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.orm.platform.user.service.impl.UserService#findUserByUsername(java
-	 * .lang.String)
-	 */
 	@Override
-	public User findUserByUsername(String loginName) throws ServiceException {
-		return userDao.findUserByUsername(loginName);
-	}
-
 	public User getUserByRequest(HttpServletRequest request) {
 		String loginName = request.getParameter("loginName");
 		String realName = request.getParameter("realName");
@@ -170,93 +247,26 @@ public class UserServiceImpl extends DefaulfAbstractService<User, String> implem
 	}
 
 	@Override
-	public User findUserByUsernameAndPassword(HttpServletRequest request) throws ServiceException {
-		String username = request.getParameter("username");
-		String password = request.getParameter("password");
-		User user = userDao.findUserByUsername(username);
-		if (user != null) {
-			if (StringUtils.equals(user.getPassword(), MD5Encryption.MD5(password))) {
-				request.getSession().setAttribute("user", user);
-				return user;
-			}
-		}
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.cako.basic.platform.user.service.IUserService#finRolesByUserId(java
-	 * .lang.String)
-	 */
-	@Override
-	public List<Role> finRolesByUserId(String userId) {
-		return userDao.finRolesByUserId(userId);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.cako.basic.platform.user.service.IUserService#findUserByLoginName
-	 * (java.lang.String)
-	 */
-	public User findUserByLoginName(String loginName) throws ServiceException {
-		if (isRootUser(loginName)) {
-			InitEnvironment environment = InitEnvironment.getInitEnvironmentInstance();
-			User user = new User();
-			user.setId("root");
-			user.setPassword(MD5Encryption.MD5(environment.getInitPassword()));
-			user.setRealName("管理员");
-			user.setLoginName("root");
-			user.setStatus(User.Status.NORMAL);
-			return user;
-		}
-		return this.userDao.findUserByUsername(loginName);
-	}
-
 	public boolean isRootUser(String loginName) {
 		return "root".equals(loginName);
 	}
 
-	public Set<String> findRolesByLoginName(String loginName) {
-		Set<String> set = Sets.newHashSet();
-		if (isRootUser(loginName)) {
-			List<Role> roles = roleDao.findAll();
-			for (Role role : roles)
-				set.add(role.getId());
-		} else {
-			User user = userDao.findUserByUsername(loginName);
-			List<Role> roles = userDao.finRolesByUserId(user.getId());
-			for (Role role : roles) {
-				set.add(role.getId());
-			}
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * com.orm.platform.user.service.impl.UserService#save(com.webapp.userInfo
+	 * .entity.User)
+	 */
+	@Override
+	public User save(User user) {
+		if (StringUtils.isEmpty(user.getId())) {
+			user.setPassword(MD5Encryption.MD5(user.getPassword()));
 		}
-		return set;
+		return userDao.saveAndFlush(user);
 	}
 
-	public Set<String> findPermissionsByLoginName(String loginName) {
-		Set<String> set = Sets.newHashSet();
-		if (isRootUser(loginName)) {
-			List<Module> modules = this.moduleDao.findAll();
-			for (Module module : modules)
-				if (StringUtils.isNotEmpty(module.getPermission()))
-					set.add(module.getPermission());
-		} else {
-			User user = this.userDao.findUserByUsername(loginName);
-			for (Role role : user.getRoles()) {
-				List<Module> modules = roleDao.getModuleList(role.getId());
-				for (Module module : modules) {
-					if (StringUtils.isNotEmpty(module.getPermission())) {
-						set.add(module.getPermission());
-					}
-				}
-			}
-		}
-		return set;
-	}
-
+	@Override
 	public void setLogin(String userId, String password) {
 		Subject currentUser = SecurityUtils.getSubject();
 		if (!currentUser.isAuthenticated()) {

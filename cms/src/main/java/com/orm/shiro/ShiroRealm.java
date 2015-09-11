@@ -23,6 +23,7 @@ import com.cako.basic.platform.user.entity.User;
 import com.cako.basic.platform.user.service.IUserService;
 import com.orm.commons.exception.ServiceException;
 import com.orm.config.InitEnvironment;
+import com.orm.enums.SysEnum;
 
 public class ShiroRealm extends AuthorizingRealm {
 
@@ -32,29 +33,7 @@ public class ShiroRealm extends AuthorizingRealm {
 	private IUserService userService;
 
 	@Override
-	protected AuthorizationInfo doGetAuthorizationInfo(
-			PrincipalCollection principals) {
-		try {
-			String username = (String) principals.getPrimaryPrincipal();
-			logger.info("用户名称：" + username);
-			SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-			authorizationInfo.setRoles(userService.findRolesByLoginName(username));
-			Set<String> set = userService.findPermissionsByLoginName(username);
-			for (String string : set) {
-				System.out.println(string);
-			}
-			authorizationInfo.setStringPermissions(userService
-					.findPermissionsByLoginName(username));
-			return authorizationInfo;
-		} catch (BeansException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	protected AuthenticationInfo doGetAuthenticationInfo(
-			AuthenticationToken authcToken) throws AuthenticationException {
+	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authcToken) throws AuthenticationException {
 		try {
 			String loginName = (String) authcToken.getPrincipal();
 			User user = userService.findUserByLoginName(loginName);
@@ -64,13 +43,12 @@ public class ShiroRealm extends AuthorizingRealm {
 			if (user.getIsDelete().booleanValue()) {
 				throw new UnknownAccountException();
 			}
-			if (user.getStatus() == User.Status.LOCKED) {
+			if (user.getStatus() == SysEnum.Status.LOCKED) {
 				throw new LockedAccountException();
 			}
 			if (userService.isRootUser(loginName)) {
 				logger.info("超级管理员");
-				return new SimpleAuthenticationInfo("root", user.getPassword(),
-						ByteSource.Util.bytes("root" + user.getPassword()),
+				return new SimpleAuthenticationInfo("root", user.getPassword(), ByteSource.Util.bytes("root" + user.getPassword()),
 						getName());
 			}
 			SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
@@ -79,14 +57,31 @@ public class ShiroRealm extends AuthorizingRealm {
 			for (String string : set) {
 				System.out.println(string);
 			}
-			SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
-					loginName, user.getPassword(), getName());
-			authorizationInfo.setStringPermissions(userService
-					.findPermissionsByLoginName(loginName));
+			SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(loginName, user.getPassword(), getName());
+			authorizationInfo.setStringPermissions(userService.findPermissionsByLoginName(loginName));
 			return authenticationInfo;
 		} catch (BeansException e) {
 			e.printStackTrace();
 		} catch (ServiceException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+		try {
+			String username = (String) principals.getPrimaryPrincipal();
+			logger.info("用户名称：" + username);
+			SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+			authorizationInfo.setRoles(userService.findRolesByLoginName(username));
+			Set<String> set = userService.findPermissionsByLoginName(username);
+			for (String string : set) {
+				System.out.println(string);
+			}
+			authorizationInfo.setStringPermissions(userService.findPermissionsByLoginName(username));
+			return authorizationInfo;
+		} catch (BeansException e) {
 			e.printStackTrace();
 		}
 		return null;
