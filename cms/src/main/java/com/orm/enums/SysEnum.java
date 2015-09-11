@@ -1,11 +1,38 @@
 package com.orm.enums;
 
 public class SysEnum {
-	public static enum ColumnType {
-		CMS, COMMON, NOTE;
-		private ColumnType() {
 
-		}
+	/**
+	 * @描述： 栏目所属的类型
+	 * @author HUANGYUAN
+	 * @TIME:2015年9月11日 下午11:36:34
+	 */
+	public static enum ColumnType {
+		// cms 模块
+		CMS,
+		// 普通公用的木块
+		COMMON,
+		// 论坛所属的模块
+		NOTE;
+	}
+
+	/**
+	 * @描述：删除状态
+	 * @author HUANGYUAN
+	 * @TIME:2015年9月11日 下午11:44:16
+	 */
+	public static enum DeleteStatus {
+		// 正常
+		NO,
+		// 删除
+		YES;
+	}
+
+	public static enum Display {
+		// 显示
+		DISPLAY,
+		// 不显示
+		NONE;
 	}
 
 	/**
@@ -17,9 +44,6 @@ public class SysEnum {
 	 */
 	public static enum Status {
 		INIT, LOCKED, NORMAL;
-
-		private Status() {
-		}
 	}
 
 	/**
@@ -31,8 +55,5 @@ public class SysEnum {
 	 */
 	public static enum UserType {
 		ADMIN, GENERAL, LEAGUER_MEMBER, MEMBER;
-
-		private UserType() {
-		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.cako.project.note.entity;
+package com.cako.project.tribune.note.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -8,11 +8,16 @@ import javax.persistence.Table;
 
 import com.cako.basic.platform.user.entity.User;
 import com.cako.project.column.entity.Column;
-import com.orm.commons.utils.IdEntity;
+import com.cako.project.utils.BaseEntity;
 
+/**
+ * @描述：发行帖子
+ * @author HUANGYUAN
+ * @TIME:2015年9月12日 上午12:00:07
+ */
 @Entity
-@Table(name = "user_node")
-public class UserNote extends IdEntity {
+@Table(name = "tribune_user_note")
+public class UserNote extends BaseEntity {
 	private Column column;// 帖子所属的模块
 	private String noteContent;// 帖子的内容
 	private String noteTitle;// 帖子的标题
