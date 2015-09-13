@@ -85,7 +85,7 @@
 				/error.jsp=anon
 				/validateCodeServlet.images=anon
 				/bootstap.jsp=anon
-				/tribune/**=anon
+				/tribune/shouye/**=anon
 				/big/**=anon
 				/static/**=anon
 				/** = user,anyRoles

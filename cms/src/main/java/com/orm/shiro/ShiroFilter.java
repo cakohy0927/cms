@@ -25,17 +25,20 @@ public class ShiroFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		try {
 			InitEnvironment environment = InitEnvironment.getInitEnvironmentInstance();
 			System.out.println(environment);
 			HttpServletRequest httpRequest = (HttpServletRequest) request;
 			HttpSession session = httpRequest.getSession(true);
+			String url = httpRequest.getRequestURL().toString();
 			User user = (User) session.getAttribute("user");
 			if (user != null) {
 				chain.doFilter(request, response);
 			} else {
+				if (url.contains("/tribune/user")) {
+
+				}
 				httpRequest.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(request, response);
 			}
 		} catch (BeansException e) {

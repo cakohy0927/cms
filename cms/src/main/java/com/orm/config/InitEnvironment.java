@@ -6,14 +6,50 @@ import org.slf4j.LoggerFactory;
 import com.orm.commons.spring.SpringContextHolder;
 
 public class InitEnvironment {
+	private static InitEnvironment environment = null;
 	private final static Logger log = LoggerFactory.getLogger(InitEnvironment.class);
-	private String outsideOfficeHoursPage;// outsideOfficeHoursPage属性指定错误提示页面的URL
-	private String ignoreResources;// 需要忽略的文件或者路径
-	private String errorPage;// 前台错误页面
+
+	private static InitEnvironment getInitEnvironment() {
+
+		return environment;
+	}
+
+	public static InitEnvironment getInitEnvironmentInstance() {
+		return getInitEnvironment();
+	}
+
 	private String cmsIndex;// 前台首页
-	private String initUsername;
+	private String errorPage;// 前台错误页面
+	private String ignoreResources;// 需要忽略的文件或者路径
 	private String initPassword;
-	private static InitEnvironment environment  = null;
+
+	private String initUsername;
+
+	private String outsideOfficeHoursPage;// outsideOfficeHoursPage属性指定错误提示页面的URL
+
+	public String getCmsIndex() {
+		return cmsIndex;
+	}
+
+	public String getErrorPage() {
+		return errorPage;
+	}
+
+	public String getIgnoreResources() {
+		return ignoreResources;
+	}
+
+	public String getInitPassword() {
+		return initPassword;
+	}
+
+	public String getInitUsername() {
+		return initUsername;
+	}
+
+	public String getOutsideOfficeHoursPage() {
+		return outsideOfficeHoursPage;
+	}
 
 	public void init() {
 		log.info("环境正在初始化");
@@ -21,69 +57,35 @@ public class InitEnvironment {
 			environment = SpringContextHolder.getBean(InitEnvironment.class);
 		}
 	}
-	
-	public static InitEnvironment getInitEnvironmentInstance() {
-		return getInitEnvironment();
-	}
 
-	private static InitEnvironment getInitEnvironment() {
-		
-		return environment;
-	}
-
-	public String getOutsideOfficeHoursPage() {
-		return outsideOfficeHoursPage;
-	}
-
-	public void setOutsideOfficeHoursPage(String outsideOfficeHoursPage) {
-		this.outsideOfficeHoursPage = outsideOfficeHoursPage;
-	}
-
-	public String getIgnoreResources() {
-		return ignoreResources;
-	}
-
-	public void setIgnoreResources(String ignoreResources) {
-		this.ignoreResources = ignoreResources;
-	}
-
-	public String getErrorPage() {
-		return errorPage;
+	public void setCmsIndex(String cmsIndex) {
+		this.cmsIndex = cmsIndex;
 	}
 
 	public void setErrorPage(String errorPage) {
 		this.errorPage = errorPage;
 	}
 
-	public String getCmsIndex() {
-		return cmsIndex;
+	public void setIgnoreResources(String ignoreResources) {
+		this.ignoreResources = ignoreResources;
 	}
 
-	public void setCmsIndex(String cmsIndex) {
-		this.cmsIndex = cmsIndex;
-	}
-	public String getInitPassword() {
-		return initPassword;
-	}
-	
-	public String getInitUsername() {
-		return initUsername;
-	}
-	
 	public void setInitPassword(String initPassword) {
 		this.initPassword = initPassword;
 	}
-	
+
 	public void setInitUsername(String initUsername) {
 		this.initUsername = initUsername;
 	}
 
+	public void setOutsideOfficeHoursPage(String outsideOfficeHoursPage) {
+		this.outsideOfficeHoursPage = outsideOfficeHoursPage;
+	}
+
 	@Override
 	public String toString() {
-		return "InitEnvironment [outsideOfficeHoursPage="
-				+ outsideOfficeHoursPage + ", ignoreResources="
-				+ ignoreResources + ", errorPage=" + errorPage + ", cmsIndex="
-				+ cmsIndex + ", initUsername=" + initUsername
-				+ ", initPassword=" + initPassword + "]";
+		return "InitEnvironment [outsideOfficeHoursPage=" + outsideOfficeHoursPage + ", ignoreResources=" + ignoreResources
+				+ ", errorPage=" + errorPage + ", cmsIndex=" + cmsIndex + ", initUsername=" + initUsername + ", initPassword="
+				+ initPassword + "]";
 	}
 }
